@@ -18,10 +18,6 @@ class AbmController extends Controller
      */
     public function indexAction()
     {
-
-
-        //var_dump($this->get('memcache.default')); exit;
-
         return $this->render('abm/index.html.twig');
 
     }

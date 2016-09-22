@@ -4,10 +4,11 @@
 {% block body %}
     <div id="wrapper">
 
-        <h1 class="ui header">List Users</h1>
+        <h1 class="ui header">Listado</h1>
+
         <p>
             <button class="ui button" onclick="javascript:location.href='/crud/user/add';">Nuevo Usuario</button>
-	</p>
+	    </p>
 
 
         <div ng-controller="UserController as User">
@@ -29,4 +30,7 @@
     <script src="{{ asset('js/angular.min.js') }}"></script>
     <script src="{{ asset('js/angular-datatables.min.js') }}"></script>
     <script src="{{ asset('js/list.js') }}"></script>
+    <script>
+        $(".paginate_button").toggleClass('ui button');
+    </script>
 {% endblock %}

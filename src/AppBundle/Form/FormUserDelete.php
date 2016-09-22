@@ -38,14 +38,14 @@ class FormUserDelete extends AbstractType
             ->add('btnSubmit', SubmitType::class, [
                 'label' => 'Eliminar',
                 'attr' => [
-                    'class' => 'btn-default btn',
+                    'class' => 'ui button negative',
                 ]
             ])
             ->add('btnCancel', ButtonType::class, [
                 'label' => 'Cancelar',
                 'attr' => [
-                    'class' => 'btn-default btn',
-                    'onclick' => 'javascript:location.href="/crud";'
+                    'class' => 'ui button',
+                    'onclick' => 'javascritp:location.href="/crud"',
                 ]
             ])
         ;

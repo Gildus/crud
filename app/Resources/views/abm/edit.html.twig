@@ -6,6 +6,7 @@
         {{ subjectPage }}
     </h1>
 
+
     <div id="wrapper" ng-controller="formController">
 
         <div class="ui message hidden">
@@ -17,8 +18,6 @@
             {{ form_row(form.id)  }}
 
         <div class="field">
-            {{ form_label(form.started) }}
-            {{ form_errors(form.started) }}
             {{ form_widget(form.started) }}
         </div>
 

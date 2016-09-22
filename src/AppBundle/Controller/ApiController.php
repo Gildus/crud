@@ -29,7 +29,6 @@ class ApiController extends Controller
      */
     public function indexAction()
     {
-        
         die('xD');
 
     }
@@ -39,9 +38,14 @@ class ApiController extends Controller
      */
     public function getAllUsersAction()
     {
-        $serviceCache = $this->get('memcache.default');
-        $model = new UserModel($serviceCache);
-        $this->response->setContent(json_encode($model->getAllUsers()));
+        try {
+            $serviceCache = $this->get('memcache.default');
+            $model = new UserModel($serviceCache);
+            $res = $model->getAllUsers();
+        } catch (\Exception $ex) {
+            $res = [];
+        }
+        $this->response->setContent(json_encode($res));
         return $this->response;
     }
 
@@ -107,19 +111,19 @@ class ApiController extends Controller
 
             if ($form->isValid()) {
 
-                $serviceCache = $this->get('memcache.default');
-                $model = new UserModel($serviceCache);
-                if ($model->saveUser($form->getData())) {
-                    $rs['success'] = true;
+                try {
+                    $serviceCache = $this->get('memcache.default');
+                    $model = new UserModel($serviceCache);
+                    if ($model->saveUser($form->getData())) {
+                        $rs['success'] = true;
+                    }
+                } catch (\Exception $ex) {
+                    /// Logs
+                    $rs['error'] = $ex->getMessage();
                 }
 
-            } else {
 
-                /*dump((string) $form->getErrors(true));
-                dump($request->request->all());
-                dump($form->getData());
-                dump($user);
-                exit;*/
+            } else {
                 $errors = '';
                 foreach ($form->getErrors(true) as $error)
                     $errors .= $error->getMessage() . '. ';
@@ -127,7 +131,6 @@ class ApiController extends Controller
                 $rs['error'] = $errors;
             }
         }
-
 
 
         $this->response->setContent(json_encode($rs));

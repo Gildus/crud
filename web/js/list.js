@@ -24,6 +24,7 @@
 
     });
 
+
 })(angular);
 
 
@@ -34,3 +35,8 @@ function editItem(id) {
 function deleteItem(id) {
     window.location.href='/crud/user/delete/'+id;
 }
+
+window.setTimeout(function(){
+    $(".paginate_button").toggleClass('ui button');
+    window.clearTimeout();
+}, 5000);

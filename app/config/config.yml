@@ -68,8 +68,6 @@ swiftmailer:
     spool:     { type: memory }
 
 lsw_memcache:
-    session:
-        pool: default
     pools:
         default:
             servers:
