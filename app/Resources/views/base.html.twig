@@ -1,0 +1,47 @@
+<!doctype html>
+<html ng-app="abmApp">
+    <head>
+        <meta charset="UTF-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>{% block title %}Welcome!{% endblock %}</title>
+	<meta name="description" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	
+	<link href="{{ asset('css/semantic.min.css') }}" rel="stylesheet" type="text/css" />
+	<link href="{{ asset('css/abm/main.css') }}" type="text/css" rel="stylesheet" />
+
+    <script src="{{ asset('js/jquery.min.js') }}"></script>
+	<script src="{{ asset('js/semantic.min.js') }}"></script>
+
+	
+	{% block stylesheets %}{% endblock %}
+        <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
+    </head>
+    <body>
+
+	<!--[if lt IE 7]>
+      <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+  <![endif]-->
+
+<div class="ui fixed inverted menu">
+    <div class="ui container">
+      <a href="#" class="header item">
+        <img class="logo" src="{{ asset('img/logo.png') }}">
+        ABM o Crud, lo mismo.
+      </a>
+      <div class="ui simple dropdown item">
+        Opciones <i class="dropdown icon"></i>
+        <div class="menu">
+          <a class="item" href="/crud">Listado</a>
+          <a class="item" href="/crud/user/add">Nuevo Usuario</a>
+        </div>
+      </div>
+    </div>
+</div>
+
+<div class="ui main container">
+        {% block body %}{% endblock %}
+</div>
+        {% block javascripts %}{% endblock %}
+    </body>
+</html>

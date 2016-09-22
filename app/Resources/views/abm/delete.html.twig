@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div id="wrapper" ng-controller="formController">
+        Desea realmente eliminar el usuario <strong>{{ names }} </strong> ?
+        {{ form_start(form, {'attr':{'ng-submit':'processForm($event)'}}) }}
+            {{ form_row(form.id)  }}
+            {{ form_row(form.btnSubmit) }}
+            {{ form_row(form.btnCancel) }}
+            {{ form_row(form._token) }}
+        {{ form_end(form, {'render_rest': false}) }}
+
+        <div id="messages" ng-show="message">{[{message}]}</div>
+
+    </div>
+{% endblock %}
+
+
+{% block stylesheets %}
+
+{% endblock %}
+
+{% block javascripts %}
+    <script src="{{ asset('js/jquery.min.js') }}"></script>
+    <script src="{{ asset('js/angular.min.js') }}"></script>
+    <script src="{{ asset('js/form.js') }}"></script>
+    {% if  id is defined %}
+        <script>
+            function populateDataForm(scope) {
+                scope.formData = {
+                    id: "{{ id }}"
+                };
+            }
+        </script>
+    {%  endif %}
+
+
+{% endblock %}
