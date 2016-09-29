@@ -3,7 +3,6 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * User
@@ -22,13 +21,10 @@ class User
      */
     private $id;
 
-
-
     /**
      * @var string
      *
      * @ORM\Column(name="names", type="string", length=255)
-     * @Assert\NotBlank()
      */
     private $names;
 
@@ -36,7 +32,6 @@ class User
      * @var string
      *
      * @ORM\Column(name="username", type="string", length=255)
-     * @Assert\NotBlank()
      */
     private $username;
 
@@ -44,14 +39,13 @@ class User
      * @var string
      *
      * @ORM\Column(name="password", type="string", length=255)
-     * @Assert\NotBlank()
      */
     private $password;
 
     /**
-     * @var string
+     * @var \DateTime
      *
-     * @ORM\Column(name="created_at", type="string", length=19)
+     * @ORM\Column(name="created_at", type="datetime")
      */
     private $createdAt;
 
@@ -59,11 +53,6 @@ class User
      * @var string
      *
      * @ORM\Column(name="email", type="string", length=255)
-     * @Assert\NotBlank()
-     * @Assert\Email(
-     *     message = "The email '{{ value }}' is not a valid email.",
-     *     checkMX = true
-     * )
      */
     private $email;
 
@@ -72,7 +61,7 @@ class User
      *
      * @ORM\Column(name="status", type="boolean")
      */
-    private $status = false;
+    private $status;
 
 
     /**
@@ -84,17 +73,6 @@ class User
     {
         return $this->id;
     }
-
-    /**
-     * @param int $id
-     * @return User
-     */
-    public function setId($id)
-    {
-        $this->id = $id;
-        return $this;
-    }
-
 
     /**
      * Set names
@@ -171,7 +149,7 @@ class User
     /**
      * Set createdAt
      *
-     * @param string $createdAt
+     * @param \DateTime $createdAt
      *
      * @return User
      */
@@ -185,7 +163,7 @@ class User
     /**
      * Get createdAt
      *
-     * @return string
+     * @return \DateTime
      */
     public function getCreatedAt()
     {
@@ -239,25 +217,5 @@ class User
     {
         return $this->status;
     }
-
-
-    /**
-     * Dump User to array
-     *
-     * @return array
-     */
-    public function toArray()
-    {
-        return [
-            'id'        => $this->getId(),
-            'names'     => $this->getNames(),
-            'username'  => $this->getUsername(),
-            'email'     => $this->getEmail(),
-            'password'  => $this->getPassword(),
-            'created_at' => $this->getCreatedAt(),
-            'status'    => $this->getStatus()
-        ];
-
-    }
-
 }
+

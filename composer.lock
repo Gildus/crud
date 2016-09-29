@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "e7d7141853f74a7f68d1ad66067f6629",
+    "hash": "2e31ca3d15e88b48cde174b48943a053",
     "content-hash": "08a1f06905e9e9e26d916477b0c32a94",
     "packages": [
         {
@@ -878,17 +878,17 @@
         },
         {
             "name": "leaseweb/memcache-bundle",
-            "version": "v2.1.10",
+            "version": "v2.1.11",
             "target-dir": "Lsw/MemcacheBundle",
             "source": {
                 "type": "git",
                 "url": "https://github.com/LeaseWeb/LswMemcacheBundle.git",
-                "reference": "e695603af5f19960851b4aeb6376fdd184fa667f"
+                "reference": "bdaafc63e355bb248dd0ad35418ea757d5c38323"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/LeaseWeb/LswMemcacheBundle/zipball/e695603af5f19960851b4aeb6376fdd184fa667f",
-                "reference": "e695603af5f19960851b4aeb6376fdd184fa667f",
+                "url": "https://api.github.com/repos/LeaseWeb/LswMemcacheBundle/zipball/bdaafc63e355bb248dd0ad35418ea757d5c38323",
+                "reference": "bdaafc63e355bb248dd0ad35418ea757d5c38323",
                 "shasum": ""
             },
             "require": {
@@ -928,7 +928,7 @@
                 "memcached",
                 "session"
             ],
-            "time": "2016-06-24 08:37:03"
+            "time": "2016-09-27 17:12:17"
         },
         {
             "name": "monolog/monolog",
@@ -1956,16 +1956,16 @@
         },
         {
             "name": "twig/twig",
-            "version": "v1.24.2",
+            "version": "v1.25.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/twigphp/Twig.git",
-                "reference": "33093f6e310e6976baeac7b14f3a6ec02f2d79b7"
+                "reference": "f16a634ab08d87e520da5671ec52153d627f10f6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/twigphp/Twig/zipball/33093f6e310e6976baeac7b14f3a6ec02f2d79b7",
-                "reference": "33093f6e310e6976baeac7b14f3a6ec02f2d79b7",
+                "url": "https://api.github.com/repos/twigphp/Twig/zipball/f16a634ab08d87e520da5671ec52153d627f10f6",
+                "reference": "f16a634ab08d87e520da5671ec52153d627f10f6",
                 "shasum": ""
             },
             "require": {
@@ -1978,7 +1978,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.24-dev"
+                    "dev-master": "1.25-dev"
                 }
             },
             "autoload": {
@@ -2013,7 +2013,7 @@
             "keywords": [
                 "templating"
             ],
-            "time": "2016-09-01 17:50:53"
+            "time": "2016-09-21 23:05:12"
         }
     ],
     "packages-dev": [

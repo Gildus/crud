@@ -25,10 +25,10 @@ class FormUser extends AbstractType
 
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
-        /*$resolver->setDefaults(array(
+        $resolver->setDefaults([
             'csrf_protection' => false,
             'data_class' => 'AppBundle\Entity\User',
-        ));*/
+        ]);
     }
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
@@ -76,12 +76,12 @@ class FormUser extends AbstractType
                 'attr' => [
                     'ng-model' => 'formData.status'
                 ]
-            ])->add('started', DateType::class, [
+            ])->add('created_at', DateTimeType::class, [
                 'input' => 'string',
                 'widget' => 'single_text',
                 'html5' => false,
                 'label' => 'Fecha Inicio',
-                'format' => 'yyyy-MM-dd',
+                'format' => 'yyyy-MM-dd H:m:s',
                 'attr' => [
                     'class' => 'js-datepicker',
                     'ng-model' => 'formData.started',

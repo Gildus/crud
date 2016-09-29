@@ -9,13 +9,17 @@ use AppBundle\Form\FormUserDelete;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 
+/**
+ * @Route("/api")
+ */
 class ApiController extends Controller
 {
     protected $response;
-
 
     public function __construct()
     {
@@ -25,166 +29,175 @@ class ApiController extends Controller
 
 
     /**
-     * @Route("/api", name = "api")
+     * Get all items registered
+     *
+     * @Route("/", name = "api", name="api_index")
+     * @Method({"GET"})
      */
     public function indexAction()
     {
-        die('xD');
-
-    }
-
-    /**
-     * @Route("/api/all", name="api_get_all")
-     */
-    public function getAllUsersAction()
-    {
         try {
-            $serviceCache = $this->get('memcache.default');
-            $model = new UserModel($serviceCache);
-            $res = $model->getAllUsers();
+            $items = $this->getDoctrine()
+                ->getRepository('AppBundle:User')
+                ->findAll();
+            $res = [];
+
+            foreach ($items as $item) {
+                $res[] = [
+                    'id' => $item->getId(),
+                    'names' => $item->getNames(),
+                    'username' => $item->getUsername(),
+                    'password' => $item->getPassword(),
+                    'created_at' => $item->getCreatedAt(),
+                    'email' => $item->getEmail(),
+                    'status' => $item->getStatus(),
+                ];
+            }
         } catch (\Exception $ex) {
             $res = [];
         }
-        $this->response->setContent(json_encode($res));
-        return $this->response;
-    }
-
-
-    /**
-     * @Route("/api/edit/{id}", name="api_edit_user", requirements={"id": "\d+"})
-     */
-    public function editUserAction(Request $request, $id)
-    {
-        $rs = [
-            'success' => false
-        ];
-
-        if ($request->getMethod() == 'POST' && $request->isXmlHttpRequest()) {
-
-            $user = new User();
-
-            $form = $this->createForm(FormUser::class, $user, [
-                'csrf_protection' => false
-            ]);
-            $form->submit($request->request->all());
-            if ($form->isValid()) {
-
-                $serviceCache = $this->get('memcache.default');
-                $model = new UserModel($serviceCache);
-                if ($model->saveUser($form->getData())) {
-                    $rs['success'] = true;
-                }
-
-            } else {
-
-                $errors = '';
-                foreach ($form->getErrors(true) as $error)
-                    $errors .= $error->getMessage() . '. ';
-
-                $rs['error'] = $errors;
-            }
-
-        }
-
-        $this->response->setContent(json_encode($rs));
-        return $this->response;
+        return new JsonResponse($res);
     }
 
     /**
-     * @Route("/api/add", name="api_add_user")
+     * @Route("/add", name="api_add_user")
+     * @Method({"POST"})
      */
     public function addUserAction(Request $request)
     {
-        $rs = [
-            'success' => false
-        ];
+        $rs = ['success' => false];
 
-        if ($request->getMethod() == 'POST' && $request->isXmlHttpRequest()) {
+        $user = new User();
+        $form = $this->createForm(FormUser::class, $user, ['csrf_protection' => false]);
+        $dataRequest = json_decode($request->getContent(), true);
+        $dataRequest['created_at'] = date('Y-m-d H:i:s');
+        $dataRequest['status'] = true;
 
-            $user = new User();
-            $form = $this->createForm(FormUser::class, $user, [
-                'csrf_protection' => false
-            ]);
+        $form->submit($dataRequest);
 
-            $request->request->add(['started' => $user->getStarted() ]);
-            $form->submit($request->request->all());
+        if ($form->isValid()) {
+            $newUser = $form->getData();
+            try {
+                $em = $this->getDoctrine()->getManager();
+                $em->persist($newUser);
+                $em->flush();
 
-            if ($form->isValid()) {
+                $rs['success'] = true;
 
-                try {
-                    $serviceCache = $this->get('memcache.default');
-                    $model = new UserModel($serviceCache);
-                    if ($model->saveUser($form->getData())) {
-                        $rs['success'] = true;
-                    }
-                } catch (\Exception $ex) {
-                    /// Logs
-                    $rs['error'] = $ex->getMessage();
+            } catch (\Exception $ex) {
+                /// Logs
+                $rs['error'] = $ex->getMessage();
+            }
+
+
+        } else {
+            $errors = '';
+            foreach ($form->getErrors(true) as $error)
+                $errors .= $error->getMessage() . '. ';
+
+            die($errors);
+            $rs['error'] = $errors;
+        }
+
+        return new JsonResponse($rs);
+    }
+
+    /**
+     * Endpoint for edit item
+     *
+     * @Route("/edit/{id}", name="api_edit_user", requirements={"id": "\d+"})
+     * @Method({"POST"})
+     */
+    public function editUserAction(Request $request, $id)
+    {
+        $rs = ['success' => false];
+        $doc = $this->getDoctrine();
+        $itemToEdit = $doc->getRepository('AppBundle:User')->find($id);
+
+        if ($itemToEdit) {
+            try {
+                $dataOriginal = $itemToEdit->toArray();
+
+                $form = $this->createForm(FormUser::class, $itemToEdit, ['csrf_protection' => false]);
+                $dataRequest = json_decode($request->getContent(), true);
+                $dataRequest = array_replace($dataOriginal, $dataRequest);
+                $form->submit($dataRequest);
+
+                if ($form->isValid()) {
+
+                    $dataToSave = $form->getData();
+                    if (!$dataToSave->getStatus()) $dataToSave->setStatus(false);
+
+                    $em = $doc->getManager();
+                    $em->persist($dataToSave);
+                    $em->flush();
+
+                    $rs['success'] = true;
+
+                } else {
+                    $errors = '';
+                    foreach ($form->getErrors(true) as $error)
+                        $errors .= $error->getMessage() . '. ';
+                    $rs['error'] = $errors;
                 }
 
-
-            } else {
-                $errors = '';
-                foreach ($form->getErrors(true) as $error)
-                    $errors .= $error->getMessage() . '. ';
-
-                $rs['error'] = $errors;
+            } catch (\Exception $ex) {
+                $rs['error'] = $ex->getMessage();
             }
         }
 
 
-        $this->response->setContent(json_encode($rs));
-        return $this->response;
-
+        return new JsonResponse($rs);
     }
 
 
     /**
-     * @Route("/api/delete/{id}", name="api_delete_user", requirements={"id": "\d+"})
-     *
+     * @Route("/view/{id}", name="api_view_user", requirements={"id": "\d+"})
+     * @Method({"GET"})
+     */
+    public function getAction($id)
+    {
+        $rs = [];
+
+        try {
+            $rs = $this->getDoctrine()
+                ->getRepository('AppBundle:User')
+                ->find($id)
+                ->toArray();
+
+        } catch (\Exception $ex) {
+            $rs['error'] = $ex->getMessage();
+        }
+
+        return new JsonResponse($rs);
+
+
+    }
+
+
+
+    /**
+     * @Route("/delete/{id}", name="api_delete_user", requirements={"id": "\d+"})
+     * @Method({"DELETE"})
      */
     public function deleteAction(Request $request, $id)
     {
+        $rs = ['success' => false];
+        $doc = $this->getDoctrine();
+        $itemToDelete = $doc->getRepository('AppBundle:User')->find($id);
 
-        $rs = [
-            'success' => false
-        ];
-
-        if ($request->getMethod() == 'POST' && $request->isXmlHttpRequest()) {
-            $serviceCache = $this->get('memcache.default');
-            $model = new UserModel($serviceCache);
-            if ($user = $model->getUserById($id) ) {
-                $user->setId($id);
-                $form = $this->createForm(FormUserDelete::class, $user,[
-                    'action' => $this->generateUrl('api_delete_user', [
-                        'id' => $id
-                    ]),
-                     'csrf_protection' => false
-                ]);
-
-                $form->submit($request->request->all());
-                if ($form->isValid()) {
-                    $model->deleteUserById($id);
-                    $rs['success'] = true;
-                } else {
-
-                    $errors = '';
-                    foreach ($form->getErrors(true) as $error) {
-                        $errors .= $error . '. ';
-                    }
-
-                    $rs['error'] = $errors;
-                    exit;
-                }
+        if ($itemToDelete) {
+            try {
+                $em = $doc->getManager();
+                $em->remove($itemToDelete);
+                $em->flush();
+                $rs['success'] = true;
+            } catch (\Exception $ex) {
+                $rs['error'] = $ex->getMessage();
             }
-
-
         }
 
-        $this->response->setContent(json_encode($rs));
-        return $this->response;
-
-
+        return new JsonResponse($rs);
     }
 
 
