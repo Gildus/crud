@@ -31,8 +31,17 @@ class ApiController extends Controller
     /**
      * Get all items registered
      *
-     * @Route("/", name = "api", name="api_index")
+     * @ApiDoc(
+     *  resource=true,
+     *  description="Get all items registered",
+     *  filters={
+     *      {"name"="a-filter", "dataType"="integer"},
+     *      {"name"="another-filter", "dataType"="string", "pattern"="(foo|bar) ASC|DESC"}
+     *  }
+     * )
+     * @Route("/", name="api_index")
      * @Method({"GET"})
+     *
      */
     public function indexAction()
     {
@@ -60,7 +69,7 @@ class ApiController extends Controller
     }
 
     /**
-     * @Route("/add", name="api_add_user")
+     * @Route("/users/", name="api_add_user")
      * @Method({"POST"})
      */
     public function addUserAction(Request $request)
@@ -152,7 +161,7 @@ class ApiController extends Controller
 
 
     /**
-     * @Route("/view/{id}", name="api_view_user", requirements={"id": "\d+"})
+     * @Route("/get/{id}", name="api_view_user", requirements={"id": "\d+"})
      * @Method({"GET"})
      */
     public function getAction($id)

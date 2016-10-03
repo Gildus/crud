@@ -12,3 +12,9 @@ services:
 #    class: Memcached
 #    calls:
 #      - [ addServers, [ %memcached_servers% ]]
+
+
+    api_response_listener:
+        class: AppBundle\EventListener\ResponseListener
+        tags:
+            - { name: kernel.event_listener, event: kernel.response, method: onKernelResponse }

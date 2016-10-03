@@ -67,8 +67,4 @@ swiftmailer:
     password:  "%mailer_password%"
     spool:     { type: memory }
 
-lsw_memcache:
-    pools:
-        default:
-            servers:
-              - { host: localhost, tcp_port: 11211 }
+nelmio_api_doc: ~
