@@ -1,0 +1,99 @@
+<h2>List of items</h2>
+<hr/>
+<p>Actually with <span class="badge">{{totalItems}}</span> items registered</p>
+
+
+<button class="btn btn-primary" type="button" [routerLink]="['/schedules','add']">
+   <i class="fa fa-calendar" aria-hidden="true"></i> New Item  
+</button>
+
+<hr/>
+
+<div [@flyInOut]="'in'">
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th><i class="glyphicon glyphicon-user" aria-hidden="true"></i> Names</th>                
+                <th><i class="glyphicon glyphicon-envelope" aria-hidden="true"></i> Email</th>                
+                <th><i class="glyphicon glyphicon-flag" aria-hidden="true"></i> Status</th>                
+                <th></th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let schedule of schedules">
+                <td> {{schedule.names}}</td>                
+                <td>{{schedule.email}}</td>
+                <td>{{schedule.status}}</td>                
+                <td>
+                    <button class="btn btn-primary btn-sm" (click)="viewScheduleDetails(schedule.id)">
+                        <i class="glyphicon glyphicon-info-sign" aria-hidden="true"></i> Details
+                    </button>
+                </td>
+                <td>
+                    <a class="btn btn-primary btn-sm" [routerLink]="['/schedules',schedule.id,'edit']">
+						<i class="glyphicon glyphicon-pencil" aria-hidden="true"></i> Edit
+                    </a>
+                </td>
+                <td>
+                    <button class="btn btn-danger btn-sm" (click)="removeSchedule(schedule)">
+						<i class="glyphicon glyphicon-trash" aria-hidden="true"></i>Delete
+					</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <pagination [boundaryLinks]="true" [totalItems]="totalItems" [itemsPerPage]="itemsPerPage" [(ngModel)]="currentPage" class="pagination-sm"
+        previousText="&lsaquo;" nextText="&rsaquo;" firstText="&laquo;" lastText="&raquo;" (pageChanged)="pageChanged($event)"></pagination>
+</div>
+
+<div bsModal #childModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" *ngIf="selectedScheduleLoaded">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" aria-label="Close" (click)="hideChildModal()">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4>Details from {{scheduleDetails.names}}</h4>
+            </div>
+            <div class="modal-body">
+                <form ngNoForm method="post">
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label class="control-label"><i class="fa fa-user" aria-hidden="true"></i>Username</label>
+                                <input type="text" class="form-control" [(ngModel)]="scheduleDetails.username" disabled />
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="control-label"><i class="fa fa-text-width" aria-hidden="true"></i>Email</label>
+                                <input type="text" class="form-control" [(ngModel)]="scheduleDetails.email" disabled />
+                            </div>                            
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-xs-6">
+                                <label class="control-label"><i class="fa fa-calendar-o" aria-hidden="true"></i>Created At</label>
+                                <input type="text" class="form-control" [(ngModel)]="scheduleDetails.created_at" disabled />
+                            </div>                            
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-4 selectContainer">
+                                <label class="control-label"><i class="fa fa-spinner" aria-hidden="true"></i>Status</label>
+                                <input type="text" class="form-control" [(ngModel)]="scheduleDetails.status" disabled />
+                            </div>                            
+                        </div>
+                    </div>
+                    
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

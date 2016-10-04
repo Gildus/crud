@@ -1,0 +1,62 @@
+<form #addScheduleForm="ngForm" *ngIf="scheduleLoaded" novalidate>
+    <div class="alert alert-danger" [hidden]="addScheduleForm.form.valid">
+        <ul *ngIf="names.dirty && !names.valid">
+            <li *ngIf="names.errors.required">Names is required</li>
+            <li *ngIf="names.errors.pattern">Names should have 5-80 characters</li>
+        </ul>
+        <ul *ngIf="username.dirty && !username.valid">
+            <li>Username is required <i>(5-20 characters)</i></li>
+        </ul>
+        <ul *ngIf="password.dirty && !password.valid">
+            <li *ngIf="password.errors.required">Password is required</li>
+            <li *ngIf="password.errors.pattern">Password is required <i>(6-20 characters)</i></li>
+        </ul>
+		<ul *ngIf="email.dirty && !email.valid">
+            <li *ngIf="email.errors.required">Email is required</li>
+            <li *ngIf="email.errors.pattern">Email should have at least 10 characters</li>
+        </ul>
+		
+        <ul *ngIf="status.dirty && !status.valid">
+            <li *ngIf="status.errors.required">Status is required</li>
+        </ul>
+    </div>
+
+    <button type="button" class="btn btn-danger" (click)="back()">
+        <i class="fa fa-arrow-circle-left" aria-hidden="true"></i>Back</button>
+    <button type="button" [disabled]="!addScheduleForm.form.valid" class="btn btn-default" (click)="registerSchedule(addScheduleForm)">
+        <i class="fa fa-pencil-square-o" aria-hidden="true"></i>Save new</button>
+
+    <hr/>
+
+    <div class="form-group">        
+		<label class="control-label"><i class="fa fa-user" aria-hidden="true"></i>Names</label>
+		<input type="text" class="form-control" [(ngModel)]="schedule.names" name="names" #names="ngModel" required pattern=".{5,80}" />
+    </div>
+    <div class="form-group">    
+		<label class="control-label"><i class="fa fa-text-width" aria-hidden="true"></i>Username</label>
+		<input type="text" class="form-control" [(ngModel)]="schedule.username" name="username" #username="ngModel" required pattern=".{5,20}"/>
+    </div>
+    <div class="form-group">
+		<label class="control-label"><i class="fa fa-text-width" aria-hidden="true"></i>Password</label>
+		<input type="password" class="form-control" [(ngModel)]="schedule.password" name="password" #password="ngModel" required pattern=".{6,20}"/>
+    </div>
+    <div class="form-group">
+        <label class="control-label"><i class="fa fa-paragraph" aria-hidden="true"></i>Email</label>
+		<input type="text" class="form-control" [(ngModel)]="schedule.email" name="email" #email="ngModel" required
+			pattern=".{10,}" />
+	</div>
+
+    <div class="form-group">
+		<label class="control-label"><i class="fa fa-calendar-o" aria-hidden="true"></i>Created At</label>
+		<datepicker [(ngModel)]="schedule.created_at" name="created_at" [showWeeks]="false"></datepicker>                
+    </div>
+
+    <div class="form-group">    
+        <div class="selectContainer">
+            <label class="control-label"><i class="fa fa-spinner" aria-hidden="true"></i>Status</label>
+            <select class="form-control" [(ngModel)]="schedule.status" name="status" #status="ngModel" required>
+                <option *ngFor="let status of statuses" [value]="status">{{status}}</option>
+            </select>
+        </div>
+    </div>        
+</form>

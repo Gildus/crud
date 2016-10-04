@@ -1,0 +1,9 @@
+{
+  "directory": "bower_components",
+  "proxy": "http://proxy.corp.globant.com:3128",
+  "https-proxy": "http://proxy.corp.globant.com:3128",
+  "http-proxy": "http://proxy.corp.globant.com:3128",
+  "strict-ssl": false,  
+  "no-proxy": true,
+  "timeout": 0
+}
