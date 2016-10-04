@@ -5,7 +5,8 @@ import { Component, OnInit, ViewChild, Input, Output,
     animate,
     transition } from '@angular/core';
 
-import { ModalDirective } from 'ng2-bootstrap';
+//import {ModalDirective } from 'ng2-bootstrap';
+import { ModalDirective } from 'ng2-bootstrap/components/modal/modal.component';
 import { SlimLoadingBarService } from 'ng2-slim-loading-bar';
 
 import { DataService } from '../shared/services/data.service';
@@ -13,12 +14,12 @@ import { DateFormatPipe } from '../shared/pipes/date-format.pipe';
 import { ItemsService } from '../shared/utils/items.service';
 import { NotificationService } from '../shared/utils/notification.service';
 import { ConfigService } from '../shared/utils/config.service';
-import { ISchedule, IScheduleDetails, Pagination, PaginatedResult } from '../shared/interfaces';
+import { IUser, IUserDetails, Pagination, PaginatedResult } from '../shared/interfaces';
 
 @Component({
     moduleId: module.id,
-    selector: 'app-schedules',
-    templateUrl: 'schedule-list.component.html',
+    selector: 'app-users',
+    templateUrl: 'user-list.component.html',
     animations: [
         trigger('flyInOut', [
             state('in', style({ opacity: 1, transform: 'translateX(0)' })),
@@ -38,9 +39,9 @@ import { ISchedule, IScheduleDetails, Pagination, PaginatedResult } from '../sha
         ])
     ]
 })
-export class ScheduleListComponent implements OnInit {
+export class UserListComponent implements OnInit {
     @ViewChild('childModal') public childModal: ModalDirective;
-    schedules: ISchedule[];
+    users: IUser[];
     apiHost: string;
 
     public itemsPerPage: number = 2;
@@ -53,9 +54,9 @@ export class ScheduleListComponent implements OnInit {
     items: string[] = ['item1', 'item2', 'item3'];
     selected: string;
     output: string;
-    selectedScheduleId: number;
-    scheduleDetails: IScheduleDetails;
-    selectedScheduleLoaded: boolean = false;
+    selectedUserId: number;
+    userDetails: IUserDetails;
+    selectedUserLoaded: boolean = false;
     index: number = 0;
     backdropOptions = [true, false, 'static'];
     animation: boolean = true;
@@ -71,63 +72,63 @@ export class ScheduleListComponent implements OnInit {
 
     ngOnInit() {
         this.apiHost = this.configService.getApiHost();
-        this.loadSchedules();
+        this.loadUsers();
     }
 
-    loadSchedules() {
+    loadUsers() {
         this.loadingBarService.start();
 
-        this.dataService.getSchedules(this.currentPage, this.itemsPerPage)
-            .subscribe((res: PaginatedResult<ISchedule[]>) => {
-                this.schedules = res.result;// schedules;
+        this.dataService.getUsers(this.currentPage, this.itemsPerPage)
+            .subscribe((res: PaginatedResult<IUser[]>) => {
+                this.users = res.result;
                 this.totalItems = res.pagination.TotalItems;
                 this.loadingBarService.complete();
             },
             error => {
                 this.loadingBarService.complete();
-                this.notificationService.printErrorMessage('Failed to load schedules. ' + error);
+                this.notificationService.printErrorMessage('Failed to load users. ' + error);
             });
     }
 
     pageChanged(event: any): void {
         this.currentPage = event.page;
-        this.loadSchedules();
+        this.loadUsers();
         //console.log('Page changed to: ' + event.page);
         //console.log('Number items per page: ' + event.itemsPerPage);
     };
 
-    removeSchedule(schedule: ISchedule) {
+    removeUser(params: IUser) {
         this.notificationService.openConfirmationDialog('Are you sure you want to delete this item ?',
             () => {
                 this.loadingBarService.start();
-                this.dataService.deleteSchedule(schedule.id)
+                this.dataService.deleteUser(params.id)
                     .subscribe(() => {
-                        this.itemsService.removeItemFromArray<ISchedule>(this.schedules, schedule);
-                        this.notificationService.printSuccessMessage(schedule.names + ' has been deleted.');
+                        this.itemsService.removeItemFromArray<IUser>(this.users, params);
+                        this.notificationService.printSuccessMessage(params.names + ' has been deleted.');
                         this.loadingBarService.complete();
                     },
                     error => {
                         this.loadingBarService.complete();
-                        this.notificationService.printErrorMessage('Failed to delete ' + schedule.names + ' ' + error);
+                        this.notificationService.printErrorMessage('Failed to delete ' + params.names + ' ' + error);
                     });
             });
     }
 
-    viewScheduleDetails(id: number) {
-        this.selectedScheduleId = id;
+    viewUserDetails(id: number) {
+        this.selectedUserId = id;
 
-        this.dataService.getScheduleDetails(this.selectedScheduleId)
-            .subscribe((schedule: IScheduleDetails) => {
-                this.scheduleDetails = this.itemsService.getSerialized<IScheduleDetails>(schedule);
+        this.dataService.getUserDetails(this.selectedUserId)
+            .subscribe((responseUser: IUserDetails) => {
+                this.userDetails = this.itemsService.getSerialized<IUserDetails>(responseUser);
                 // Convert date times to readable format
-                this.scheduleDetails.created_at = new DateFormatPipe().transform(schedule.created_at, ['local']);        
+                this.userDetails.created_at = new DateFormatPipe().transform(responseUser.created_at, ['local']);        
                 this.loadingBarService.complete();
-                this.selectedScheduleLoaded = true;
+                this.selectedUserLoaded = true;
                 this.childModal.show();//.open('lg');
             },
             error => {
                 this.loadingBarService.complete();
-                this.notificationService.printErrorMessage('Failed to load schedule. ' + error);
+                this.notificationService.printErrorMessage('Failed to load users. ' + error);
             });
     }
 

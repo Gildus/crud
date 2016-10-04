@@ -1,9 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router, 
-		ActivatedRoute, 
-		ROUTER_DIRECTIVES, 
-		Location 
-		} from '@angular/router';
+import { Router, ActivatedRoute	} from '@angular/router';
 import { NgForm } from '@angular/forms';
 
 import { SlimLoadingBarService } from 'ng2-slim-loading-bar';
@@ -13,19 +9,19 @@ import { ItemsService } from '../shared/utils/items.service';
 import { NotificationService } from '../shared/utils/notification.service';
 import { ConfigService } from '../shared/utils/config.service';
 import { MappingService } from '../shared/utils/mapping.service';
-import { ISchedule, IScheduleDetails, IUser } from '../shared/interfaces';
+import { IUser, IUserDetails } from '../shared/interfaces';
 import { DateFormatPipe } from '../shared/pipes/date-format.pipe';
 
 @Component({
     moduleId: module.id,
-    selector: 'app-schedule-edit',
-    templateUrl: 'schedule-edit.component.html'
+    selector: 'app-user-edit',
+    templateUrl: 'user-edit.component.html'
 })
-export class ScheduleEditComponent implements OnInit {
+export class UserEditComponent implements OnInit {
     apiHost: string;
     id: number;
-    schedule: IScheduleDetails;
-    scheduleLoaded: boolean = false;
+    user: IUserDetails;
+    userLoaded: boolean = false;
     statuses: string[];
     types: string[];
     private sub: any;
@@ -43,48 +39,48 @@ export class ScheduleEditComponent implements OnInit {
         // (+) converts string 'id' to a number
 	    this.id = +this.route.snapshot.params['id'];
         this.apiHost = this.configService.getApiHost();
-        this.loadScheduleDetails();
+        this.loadUserDetails();
     }
 
-    loadScheduleDetails() {
+    loadUserDetails() {
         this.loadingBarService.start();
-        this.dataService.getScheduleDetails(this.id)
-            .subscribe((schedule: IScheduleDetails) => {
-                this.schedule = this.itemsService.getSerialized<IScheduleDetails>(schedule);
-                console.log(this.schedule);
-				this.scheduleLoaded = true;
+        this.dataService.getUserDetails(this.id)
+            .subscribe((responseDataUser: IUserDetails) => {
+                this.user = this.itemsService.getSerialized<IUserDetails>(responseDataUser);
+                console.log(this.user);
+				this.userLoaded = true;
                 // Convert date times to readable format
-                this.schedule.created_at = new Date(this.schedule.created_at.toString()); // new DateFormatPipe().transform(schedule.timeStart, ['local']);                
-                this.statuses = this.schedule.statuses;
+                this.user.created_at = new Date(this.user.created_at.toString());                
+                this.statuses = this.user.statuses;
                 this.loadingBarService.complete();
             },
             error => {
                 this.loadingBarService.complete();
-                this.notificationService.printErrorMessage('Failed to load schedule. ' + error);
+                this.notificationService.printErrorMessage('Failed to load user. ' + error);
             });
     }
 
-    updateSchedule(editScheduleForm: NgForm) {
-        console.log(editScheduleForm.value);
+    updateUser(editUserForm: NgForm) {
+        console.log(editUserForm.value);
 
-        var scheduleMapped = this.mappingService.mapScheduleDetailsToSchedule(this.schedule);
+        var userMapped = this.mappingService.mapUserDetailsToUser(this.user);
 
         this.loadingBarService.start();
-        this.dataService.updateSchedule(scheduleMapped)
+        this.dataService.updateUser(userMapped)
             .subscribe(() => {
-                this.notificationService.printSuccessMessage('Schedule has been updated');
+                this.notificationService.printSuccessMessage('User has been updated');
                 this.loadingBarService.complete();
-				this.router.navigate(['schedules']);
+				this.router.navigate(['/users']);
             },
             error => {
                 this.loadingBarService.complete();
-                this.notificationService.printErrorMessage('Failed to update schedule. ' + error);
+                this.notificationService.printErrorMessage('Failed to update user. ' + error);
             });
     }
     
 
     back() {
-        this.router.navigate(['/schedules']);
+        this.router.navigate(['/users']);
     }
 
 }

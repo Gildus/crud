@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 
-import { ISchedule, IScheduleDetails, IUser } from '../interfaces';
+import { IUser, IUserDetails } from '../interfaces';
 import  { ItemsService } from './items.service'
 
 @Injectable()
@@ -8,18 +8,18 @@ export class MappingService {
 
     constructor(private itemsService : ItemsService) { }
 
-    mapScheduleDetailsToSchedule(scheduleDetails: IScheduleDetails): ISchedule {
-        var schedule: ISchedule = {
-            id: scheduleDetails.id,
-            names: scheduleDetails.names,
-            email: scheduleDetails.email,
-            password: scheduleDetails.password,
-            username: scheduleDetails.username,
-            created_at: scheduleDetails.created_at,            
-            status: scheduleDetails.status                        
+    mapUserDetailsToUser(details: IUserDetails): IUser {
+        var res: IUser = {
+            id: details.id,
+            names: details.names,
+            email: details.email,
+            password: details.password,
+            username: details.username,
+            created_at: details.created_at,            
+            status: details.status                        
         }
 
-        return schedule;
+        return res;
     }
 
 }

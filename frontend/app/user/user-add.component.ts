@@ -1,9 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router, 
-		ActivatedRoute, 
-		ROUTER_DIRECTIVES, 
-		Location
-	} from '@angular/router';
+import { Router, ActivatedRoute	} from '@angular/router';
 import { NgForm } from '@angular/forms';
 
 import { SlimLoadingBarService } from 'ng2-slim-loading-bar';
@@ -13,18 +9,18 @@ import { ItemsService } from '../shared/utils/items.service';
 import { NotificationService } from '../shared/utils/notification.service';
 import { ConfigService } from '../shared/utils/config.service';
 import { MappingService } from '../shared/utils/mapping.service';
-import { ISchedule, IScheduleDetails, IUser } from '../shared/interfaces';
+import { IUser, IUserDetails, IDataInitial } from '../shared/interfaces';
 import { DateFormatPipe } from '../shared/pipes/date-format.pipe';
 
 @Component({
 	moduleId: module.id,
-    selector: 'app-schedule-add',
-    templateUrl: 'schedule-add.component.html'
+    selector: 'app-user-add',
+    templateUrl: 'user-add.component.html'
 })
-export class ScheduleAddComponent implements OnInit {
+export class UserAddComponent implements OnInit {
     apiHost: string;
-    schedule: IScheduleDetails;
-    scheduleLoaded: boolean = false;
+    user: IUserDetails;
+    userLoaded: boolean = false;
     statuses: string[];
     types: string[];
     private sub: any;
@@ -47,45 +43,43 @@ export class ScheduleAddComponent implements OnInit {
         this.loadingBarService.start();
         this.dataService.getDataInitial()
             .subscribe((data: IDataInitial) => {
-				this.schedule = this.itemsService.getSerialized<IScheduleDetails>(data);
-				//console.info(data.statuses);
-                //this.schedule.statuses = data.statuses;
-                this.scheduleLoaded = true;
+				this.user = this.itemsService.getSerialized<IUserDetails>(data);				
+                this.userLoaded = true;
                 // Convert date times to readable format
-                this.schedule.created_at = new Date(); // new DateFormatPipe().transform(schedule.timeStart, ['local']);                
-                this.statuses = this.schedule.statuses;
-				console.info(this.schedule);
+                this.user.created_at = new Date();                 
+                this.statuses = this.user.statuses;
+				console.info(this.user);
 				
 				this.loadingBarService.complete();
             },
             error => {
                 this.loadingBarService.complete();
-                this.notificationService.printErrorMessage('Failed to load schedule. ' + error);
+                this.notificationService.printErrorMessage('Failed to load user. ' + error);
             });
     }
 
-    registerSchedule(addScheduleForm: NgForm) {
-        console.log(addScheduleForm.value);
+    registerUser(addUserForm: NgForm) {
+        console.log(addUserForm.value);
 
-        var scheduleMapped = this.mappingService.mapScheduleDetailsToSchedule(this.schedule);
+        var dataUserMapped = this.mappingService.mapUserDetailsToUser(this.user);
 
         this.loadingBarService.start();
-        this.dataService.registerSchedule(scheduleMapped)
+        this.dataService.registerUser(dataUserMapped)
             .subscribe(() => {
-                this.notificationService.printSuccessMessage('Schedule has been registered');
+                this.notificationService.printSuccessMessage('User has been registered');
                 this.loadingBarService.complete();
-				this.router.navigate(['schedules']);
+				this.router.navigate(['/users']);
             },
             error => {
                 this.loadingBarService.complete();
-                this.notificationService.printErrorMessage('Failed to register schedule. ' + error);
+                this.notificationService.printErrorMessage('Failed to register user. ' + error);
             });
     }
 
     
 
     back() {
-        this.router.navigate(['/schedules']);
+        this.router.navigate(['/users']);
     }
 
 }

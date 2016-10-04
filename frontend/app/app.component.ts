@@ -4,7 +4,7 @@
 import './rxjs-operators';
 
 @Component({
-    selector: 'scheduler',
+    selector: 'user-crud',
     templateUrl: 'app/app.component.html'
 })
 export class AppComponent {

@@ -10,19 +10,7 @@ header('Access-Control-Allow-Headers: X-PINGOTHER, Content-Type, Pagination');
 if ($_SERVER['REQUEST_METHOD'] == 'GET') {
 
 
-	if ($_SERVER['REQUEST_URI'] == '/api/users')  {		
-		
-		echo json_encode([
-			[
-				'id' => 1,
-				'name' => 'nombres',
-				'avatar' => '',
-				'profession' => '',
-				'schedules' => 0
-			]
-			
-		]);	
-	} elseif($_SERVER['REQUEST_URI'] == '/api/schedules') {
+	if($_SERVER['REQUEST_URI'] == '/api/users') {
 		$pagination = json_encode([
 				'CurrentPage' => 1,
 				'ItemsPerPage' => 2,
@@ -62,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
 		
 		
 		
-	} elseif($_SERVER['REQUEST_URI'] == '/api/schedules/1/details') {
+	} elseif($_SERVER['REQUEST_URI'] == '/api/users/1/details') {
 		
 		echo json_encode([			
 			'id' => 1,
@@ -86,18 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
 	
 } elseif ($_SERVER['REQUEST_METHOD'] == 'PUT') {
 	
-	if ($_SERVER['REQUEST_URI'] == '/api/users/')  {
-	
-			$dataRequest = json_decode(file_get_contents('php://input'), true);
-			echo json_encode([			
-				'id' => 2,
-				'name' => $dataRequest['name'],
-				'avatar' => $dataRequest['avatar'],
-				'profession' => $dataRequest['profession'],
-				'schedules' => 0				
-			]);
-	
-	} elseif ($_SERVER['REQUEST_URI'] == '/api/schedules/add')  {
+	if ($_SERVER['REQUEST_URI'] == '/api/users/add')  {
 	
 			$dataRequest = json_decode(file_get_contents('php://input'), true);
 			echo json_encode([			

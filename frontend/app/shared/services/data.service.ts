@@ -6,7 +6,7 @@ import {Observer} from 'rxjs/Observer';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
 
-import { IUser, ISchedule, IScheduleDetails, Pagination, PaginatedResult, IDataInitial } from '../interfaces';
+import { IUser, IUserDetails, Pagination, PaginatedResult, IDataInitial } from '../interfaces';
 import { ItemsService } from '../utils/items.service';
 import { ConfigService } from '../utils/config.service';
 
@@ -21,84 +21,15 @@ export class DataService {
         this._baseUrl = configService.getApiURI();
     }
 
-    getUsers(): Observable<IUser[]> {
-        return this.http.get(this._baseUrl + 'users')
-            .map((res: Response) => {
-                console.info(res);
-				return res.json();
-            })
-            .catch(this.handleError);
-    }
-
-    getUserSchedules(id: number): Observable<ISchedule[]> {
-        return this.http.get(this._baseUrl + 'users/' + id + '/schedules')
-            .map((res: Response) => {
-                return res.json();
-            })
-            .catch(this.handleError);
-    }
-
-    createUser(user: IUser): Observable<IUser> {
-
-        let headers = new Headers();
-        headers.append('Content-Type', 'application/json');
-
-        return this.http.post(this._baseUrl + 'users/', JSON.stringify(user), {
-            headers: headers
-        })
-            .map((res: Response) => {
-                return res.json();
-            })
-            .catch(this.handleError);
-    }
-
-    updateUser(user: IUser): Observable<void> {
-
-        let headers = new Headers();
-        headers.append('Content-Type', 'application/json');
-
-        return this.http.put(this._baseUrl + 'users/' + user.id, JSON.stringify(user), {
-            headers: headers
-        })
-            .map((res: Response) => {
-                return;
-            })
-            .catch(this.handleError);
-    }
-
-    deleteUser(id: number): Observable<void> {
-        return this.http.delete(this._baseUrl + 'users/' + id)
-            .map((res: Response) => {
-                return;
-            })
-            .catch(this.handleError);
-    }
-    /*
-    getSchedules(page?: number, itemsPerPage?: number): Observable<ISchedule[]> {
-        let headers = new Headers();
-        if (page != null && itemsPerPage != null) {
-            headers.append('Pagination', page + ',' + itemsPerPage);
-        }
-
-        return this.http.get(this._baseUrl + 'schedules', {
-            headers: headers
-        })
-            .map((res: Response) => {
-                return res.json();
-            })
-            .catch(this.handleError);
-    }
-    */
-
-    getSchedules(page?: number, itemsPerPage?: number): Observable<PaginatedResult<ISchedule[]>> {
-        var peginatedResult: PaginatedResult<ISchedule[]> = new PaginatedResult<ISchedule[]>();
+    getUsers(page?: number, itemsPerPage?: number): Observable<PaginatedResult<IUser[]>> {
+        var peginatedResult: PaginatedResult<IUser[]> = new PaginatedResult<IUser[]>();
 
         let headers = new Headers();
         if (page != null && itemsPerPage != null) {
             headers.append('Pagination', page + ',' + itemsPerPage);
         }
 
-        return this.http.get(this._baseUrl + 'schedules', {
+        return this.http.get(this._baseUrl + 'users', {
             headers: headers
         })
             .map((res: Response) => {
@@ -117,28 +48,28 @@ export class DataService {
             .catch(this.handleError);
     }
 
-    getSchedule(id: number): Observable<ISchedule> {
-        return this.http.get(this._baseUrl + 'schedules/' + id)
+    getUser(id: number): Observable<IUser> {
+        return this.http.get(this._baseUrl + 'users/' + id)
             .map((res: Response) => {
                 return res.json();
             })
             .catch(this.handleError);
     }
 
-    getScheduleDetails(id: number): Observable<IScheduleDetails> {
-        return this.http.get(this._baseUrl + 'schedules/' + id + '/details')
+    getUserDetails(id: number): Observable<IUserDetails> {
+        return this.http.get(this._baseUrl + 'users/' + id + '/details')
             .map((res: Response) => {
                 return res.json();
             })
             .catch(this.handleError);
     }
 
-    updateSchedule(schedule: ISchedule): Observable<void> {
+    updateUser(params: IUser): Observable<void> {
 
         let headers = new Headers();
         headers.append('Content-Type', 'application/json');
 
-        return this.http.put(this._baseUrl + 'schedules/' + schedule.id, JSON.stringify(schedule), {
+        return this.http.put(this._baseUrl + 'users/' + params.id, JSON.stringify(params), {
             headers: headers
         })
             .map((res: Response) => {
@@ -147,12 +78,12 @@ export class DataService {
             .catch(this.handleError);
     }
 	
-	registerSchedule(schedule: ISchedule): Observable<void> {
+	registerUser(params: IUser): Observable<void> {
 
         let headers = new Headers();
         headers.append('Content-Type', 'application/json');
 
-        return this.http.put(this._baseUrl + 'schedules/add', JSON.stringify(schedule), {
+        return this.http.put(this._baseUrl + 'users/add', JSON.stringify(params), {
             headers: headers
         })
             .map((res: Response) => {
@@ -162,8 +93,8 @@ export class DataService {
             .catch(this.handleError);
     }
 
-    deleteSchedule(id: number): Observable<void> {
-        return this.http.delete(this._baseUrl + 'schedules/' + id)
+    deleteUser(id: number): Observable<void> {
+        return this.http.delete(this._baseUrl + 'users/' + id)
             .map((res: Response) => {
                 return;
             })
@@ -175,7 +106,6 @@ export class DataService {
 		return this.http.get(this._baseUrl + 'init/all')
             .map((res: Response) => {
                 var r = res.json();
-				console.info('respuesta de api/status/all');
 				console.info(r);
 				return r;
             })

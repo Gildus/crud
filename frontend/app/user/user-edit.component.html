@@ -1,5 +1,5 @@
-<form #addScheduleForm="ngForm" *ngIf="scheduleLoaded" novalidate>
-    <div class="alert alert-danger" [hidden]="addScheduleForm.form.valid">
+<form #editUserForm="ngForm" *ngIf="userLoaded" novalidate>
+    <div class="alert alert-danger" [hidden]="editUserForm.form.valid">
         <ul *ngIf="names.dirty && !names.valid">
             <li *ngIf="names.errors.required">Names is required</li>
             <li *ngIf="names.errors.pattern">Names should have 5-80 characters</li>
@@ -23,40 +23,40 @@
 
     <button type="button" class="btn btn-danger" (click)="back()">
         <i class="fa fa-arrow-circle-left" aria-hidden="true"></i>Back</button>
-    <button type="button" [disabled]="!addScheduleForm.form.valid" class="btn btn-default" (click)="registerSchedule(addScheduleForm)">
-        <i class="fa fa-pencil-square-o" aria-hidden="true"></i>Save new</button>
+    <button type="button" [disabled]="!editUserForm.form.valid" class="btn btn-default" (click)="updateUser(editUserForm)">
+        <i class="fa fa-pencil-square-o" aria-hidden="true"></i>Update</button>
 
     <hr/>
 
     <div class="form-group">        
-		<label class="control-label"><i class="fa fa-user" aria-hidden="true"></i>Names</label>
-		<input type="text" class="form-control" [(ngModel)]="schedule.names" name="names" #names="ngModel" required pattern=".{5,80}" />
-    </div>
+        <label class="control-label"><i class="fa fa-user" aria-hidden="true"></i>Names</label>
+        <input type="text" class="form-control" [(ngModel)]="user.names" name="names" #names="ngModel" required pattern=".{5,80}" />
+	</div>
     <div class="form-group">    
 		<label class="control-label"><i class="fa fa-text-width" aria-hidden="true"></i>Username</label>
-		<input type="text" class="form-control" [(ngModel)]="schedule.username" name="username" #username="ngModel" required pattern=".{5,20}"/>
-    </div>
+		<input type="text" class="form-control" [(ngModel)]="user.username" name="username" #username="ngModel" required pattern=".{5,20}"/>
+	</div>
     <div class="form-group">
 		<label class="control-label"><i class="fa fa-text-width" aria-hidden="true"></i>Password</label>
-		<input type="password" class="form-control" [(ngModel)]="schedule.password" name="password" #password="ngModel" required pattern=".{6,20}"/>
+		<input type="password" class="form-control" [(ngModel)]="user.password" name="password" #password="ngModel" required pattern=".{6,20}"
+		/>
     </div>
     <div class="form-group">
-        <label class="control-label"><i class="fa fa-paragraph" aria-hidden="true"></i>Email</label>
-		<input type="text" class="form-control" [(ngModel)]="schedule.email" name="email" #email="ngModel" required
+		<label class="control-label"><i class="fa fa-paragraph" aria-hidden="true"></i>Email</label>
+		<input type="text" class="form-control" [(ngModel)]="user.email" name="email" #email="ngModel" required
 			pattern=".{10,}" />
-	</div>
+    </div>
 
     <div class="form-group">
 		<label class="control-label"><i class="fa fa-calendar-o" aria-hidden="true"></i>Created At</label>
-		<datepicker [(ngModel)]="schedule.created_at" name="created_at" [showWeeks]="false"></datepicker>                
+		<datepicker [(ngModel)]="user.created_at" name="created_at" [showWeeks]="false"></datepicker>                            
     </div>
 
     <div class="form-group">    
-        <div class="selectContainer">
-            <label class="control-label"><i class="fa fa-spinner" aria-hidden="true"></i>Status</label>
-            <select class="form-control" [(ngModel)]="schedule.status" name="status" #status="ngModel" required>
-                <option *ngFor="let status of statuses" [value]="status">{{status}}</option>
-            </select>
-        </div>
+		<label class="control-label"><i class="fa fa-spinner" aria-hidden="true"></i>Status</label>
+		<select class="form-control" [(ngModel)]="user.status" name="status" #status="ngModel" required>
+			<option *ngFor="let status of statuses" [value]="status">{{status}}</option>
+		</select>
+	
     </div>        
 </form>

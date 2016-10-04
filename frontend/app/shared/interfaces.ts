@@ -1,12 +1,4 @@
 ﻿export interface IUser {
-    id: number;
-    name: string;
-    avatar: string;
-    profession: string;
-    schedulesCreated: number;
-}
-
-export interface ISchedule {
      id: number;
      names: string;
      username: string;
@@ -16,7 +8,7 @@ export interface ISchedule {
      status: string;          
 }
 
-export interface IScheduleDetails {
+export interface IUserDetails {
      id: number;
      names: string;
      username: string;

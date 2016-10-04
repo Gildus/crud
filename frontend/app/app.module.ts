@@ -18,11 +18,9 @@ import { DateFormatPipe } from './shared/pipes/date-format.pipe';
 import { HighlightDirective } from './shared/directives/highlight.directive';
 import { HomeComponent } from './home/home.component';
 import { MobileHideDirective } from './shared/directives/mobile-hide.directive';
-import { ScheduleAddComponent } from './schedules/schedule-add.component';
-import { ScheduleEditComponent } from './schedules/schedule-edit.component';
-import { ScheduleListComponent } from './schedules/schedule-list.component';
-import { UserCardComponent } from './users/user-card.component';
-import { UserListComponent } from './users/user-list.component';
+import { UserAddComponent } from './user/user-add.component';
+import { UserEditComponent } from './user/user-edit.component';
+import { UserListComponent } from './user/user-list.component';
 import { routing } from './app.routes';
 
 import { DataService } from './shared/services/data.service';
@@ -50,12 +48,10 @@ import { NotificationService } from './shared/utils/notification.service';
         HighlightDirective,
         HomeComponent,
         MobileHideDirective,
-        ScheduleAddComponent,
-        ScheduleEditComponent,
-        ScheduleListComponent,
-        SlimLoadingBarComponent,
-        UserCardComponent,
-        UserListComponent
+        UserAddComponent,
+        UserEditComponent,
+        UserListComponent,
+        SlimLoadingBarComponent        
     ],
     providers: [
         ConfigService,

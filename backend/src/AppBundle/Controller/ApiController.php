@@ -13,6 +13,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 
 /**
  * @Route("/api")
@@ -31,6 +32,8 @@ class ApiController extends Controller
     /**
      * Get all items registered
      *
+     * @Route("/users", name="api_index")
+     * @Method({"GET"})
      * @ApiDoc(
      *  resource=true,
      *  description="Get all items registered",
@@ -39,8 +42,6 @@ class ApiController extends Controller
      *      {"name"="another-filter", "dataType"="string", "pattern"="(foo|bar) ASC|DESC"}
      *  }
      * )
-     * @Route("/", name="api_index")
-     * @Method({"GET"})
      *
      */
     public function indexAction()
