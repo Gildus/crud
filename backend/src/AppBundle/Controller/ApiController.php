@@ -33,7 +33,7 @@ class ApiController extends Controller
      * Get all items registered
      *
      * @Route("/users", name="api_index")
-     * @Method({"GET"})
+     * @Method({"GET", "OPTIONS"})
      * @ApiDoc(
      *  resource=true,
      *  description="Get all items registered",
@@ -46,12 +46,24 @@ class ApiController extends Controller
      */
     public function indexAction()
     {
+		$res = [];
+		
         try {
             $items = $this->getDoctrine()
                 ->getRepository('AppBundle:User')
                 ->findAll();
-            $res = [];
-
+          	
+			/*$optHeader = [
+				'access-control-expose-headers' => 'Pagination',
+				'Pagination' => json_encode([
+					'CurrentPage' => $currentPage,
+					'ItemsPerPage' => $itemsPerPage,
+					'TotalItems' => count($items),
+					'TotalPages' => $totalPages
+				])
+			];*/
+			
+			
             foreach ($items as $item) {
                 $res[] = [
                     'id' => $item->getId(),
@@ -64,9 +76,10 @@ class ApiController extends Controller
                 ];
             }
         } catch (\Exception $ex) {
-            $res = [];
+            return new JsonResponse(['error' => $ex->getMessage()], 500);
         }
-        return new JsonResponse($res);
+		
+        return new JsonResponse($res, 200, $optHeader);
     }
 
     /**
