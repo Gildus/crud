@@ -44,7 +44,7 @@ class ApiController extends Controller
      * )
      *
      */
-    public function indexAction()
+    public function indexAction(Request $request)
     {
 		$res = [];
 		
@@ -53,28 +53,39 @@ class ApiController extends Controller
                 ->getRepository('AppBundle:User')
                 ->findAll();
           	
-			/*$optHeader = [
+			if ($hPag = $request->headers->get('pagination')) {
+				$arPag = explode(',', $hPag);	
+			} else {
+				$arPag = [1,5];
+			}
+		
+			
+			$optHeader = [
 				'access-control-expose-headers' => 'Pagination',
 				'Pagination' => json_encode([
-					'CurrentPage' => $currentPage,
-					'ItemsPerPage' => $itemsPerPage,
+					'CurrentPage' => $arPag[0],
+					'ItemsPerPage' => $arPag[1],
 					'TotalItems' => count($items),
-					'TotalPages' => $totalPages
+					'TotalPages' => (count($items) / $arPag[1]) 
 				])
-			];*/
+			];
 			
 			
-            foreach ($items as $item) {
-                $res[] = [
-                    'id' => $item->getId(),
-                    'names' => $item->getNames(),
-                    'username' => $item->getUsername(),
-                    'password' => $item->getPassword(),
-                    'created_at' => $item->getCreatedAt(),
-                    'email' => $item->getEmail(),
-                    'status' => $item->getStatus(),
-                ];
-            }
+			foreach ($items as $item) {
+				$res[] = [
+					'id' => $item->getId(),
+					'names' => $item->getNames(),
+					'username' => $item->getUsername(),
+					'password' => $item->getPassword(),
+					'created_at' => $item->getCreatedAt(),
+					'email' => $item->getEmail(),
+					'status' => $item->getStatus(),
+				];
+			}
+			
+			
+			
+			
         } catch (\Exception $ex) {
             return new JsonResponse(['error' => $ex->getMessage()], 500);
         }
