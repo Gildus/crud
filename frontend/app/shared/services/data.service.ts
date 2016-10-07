@@ -86,8 +86,7 @@ export class DataService {
         return this.http.put(this._baseUrl + 'users/add', JSON.stringify(params), {
             headers: headers
         })
-            .map((res: Response) => {
-                console.log(res);
+            .map((res: Response) => {                
 				return;
             })
             .catch(this.handleError);

@@ -28,19 +28,27 @@ class ApiController extends Controller
         $this->response->headers->set('Content-Type', 'application/json');
     }
 
+    /**
+     *
+     * @Route("/users")
+     * @Route("/users/{id}/details")
+     * @Route("/users/{id}")
+     * @Route("/users/add")
+     * @Method({"OPTIONS"})
+     *
+     */
+    public function requestHeaderOptions()
+    {
+        return new JsonResponse();
+    }
 
     /**
-     * Get all items registered
      *
      * @Route("/users", name="api_index")
-     * @Method({"GET", "OPTIONS"})
+     * @Method({"GET"})
      * @ApiDoc(
      *  resource=true,
-     *  description="Get all items registered",
-     *  filters={
-     *      {"name"="a-filter", "dataType"="integer"},
-     *      {"name"="another-filter", "dataType"="string", "pattern"="(foo|bar) ASC|DESC"}
-     *  }
+     *  description="Get all items registered"
      * )
      *
      */
@@ -49,37 +57,33 @@ class ApiController extends Controller
 		$res = [];
 		
         try {
+            if ($hPag = $request->headers->get('pagination')) {
+                $arPag = explode(',', $hPag);
+            } else {
+                $arPag = [1,20];
+            }
+
             $items = $this->getDoctrine()
                 ->getRepository('AppBundle:User')
-                ->findAll();
-          	
-			if ($hPag = $request->headers->get('pagination')) {
-				$arPag = explode(',', $hPag);	
-			} else {
-				$arPag = [1,5];
-			}
-		
-			
-			$optHeader = [
+                ->getListItems($arPag[0], $arPag[1]);
+
+            $optHeader = [
 				'access-control-expose-headers' => 'Pagination',
 				'Pagination' => json_encode([
 					'CurrentPage' => $arPag[0],
 					'ItemsPerPage' => $arPag[1],
-					'TotalItems' => count($items),
-					'TotalPages' => (count($items) / $arPag[1]) 
+					'TotalItems' => $items['total'],
+					'TotalPages' => round($items['total'] / $arPag[1])
 				])
 			];
 			
 			
-			foreach ($items as $item) {
+			foreach ($items['result'] as $item) {
 				$res[] = [
-					'id' => $item->getId(),
-					'names' => $item->getNames(),
-					'username' => $item->getUsername(),
-					'password' => $item->getPassword(),
-					'created_at' => $item->getCreatedAt(),
-					'email' => $item->getEmail(),
-					'status' => $item->getStatus(),
+					'id' => $item['id'],
+					'names' => $item['names'],
+					'email' => $item['email'],
+					'status' => $item['status'],
 				];
 			}
 			
@@ -94,53 +98,62 @@ class ApiController extends Controller
     }
 
     /**
-     * @Route("/users/", name="api_add_user")
-     * @Method({"POST"})
+     * @Route("/users/add", name="api_add_user")
+     * @Method({"PUT"})
+     * @ApiDoc(
+     *  resource=true,
+     *  description="Add new user"
+     * )
+     *
      */
     public function addUserAction(Request $request)
     {
         $rs = ['success' => false];
-
-        $user = new User();
-        $form = $this->createForm(FormUser::class, $user, ['csrf_protection' => false]);
         $dataRequest = json_decode($request->getContent(), true);
-        $dataRequest['created_at'] = date('Y-m-d H:i:s');
-        $dataRequest['status'] = true;
 
-        $form->submit($dataRequest);
+        if (is_array($dataRequest)) {
+            $user = new User();
+            $form = $this->createForm(FormUser::class, $user, ['csrf_protection' => false]);
+            $dataRequest['created_at'] = (new \DateTime($dataRequest['created_at']))->format('Y-m-d H:i:s');
+            $dataRequest['status'] = ( $dataRequest['status'] == 'Enabled');
 
-        if ($form->isValid()) {
-            $newUser = $form->getData();
-            try {
-                $em = $this->getDoctrine()->getManager();
-                $em->persist($newUser);
-                $em->flush();
+            $form->submit($dataRequest);
 
-                $rs['success'] = true;
+            if ($form->isValid()) {
+                $newUser = $form->getData();
+                try {
+                    $em = $this->getDoctrine()->getManager();
+                    $em->persist($newUser);
+                    $em->flush();
 
-            } catch (\Exception $ex) {
-                /// Logs
-                $rs['error'] = $ex->getMessage();
+                    $rs['success'] = true;
+
+                } catch (\Exception $ex) {
+                    /// Logs
+                    $rs['error'] = $ex->getMessage();
+                }
+
+
+            } else {
+                $errors = '';
+                foreach ($form->getErrors(true) as $error)
+                    $errors .= $error->getMessage() . '. ';
+                $rs['error'] = $errors;
             }
-
-
-        } else {
-            $errors = '';
-            foreach ($form->getErrors(true) as $error)
-                $errors .= $error->getMessage() . '. ';
-
-            die($errors);
-            $rs['error'] = $errors;
         }
 
         return new JsonResponse($rs);
     }
 
     /**
-     * Endpoint for edit item
      *
-     * @Route("/edit/{id}", name="api_edit_user", requirements={"id": "\d+"})
-     * @Method({"POST"})
+     * @Route("/users/{id}", name="api_edit_user", requirements={"id": "\d+"})
+     * @Method({"PUT"})
+     * @ApiDoc(
+     *  resource=true,
+     *  description="Endpoint for edit item"
+     * )
+     *
      */
     public function editUserAction(Request $request, $id)
     {
@@ -151,29 +164,37 @@ class ApiController extends Controller
         if ($itemToEdit) {
             try {
                 $dataOriginal = $itemToEdit->toArray();
-
-                $form = $this->createForm(FormUser::class, $itemToEdit, ['csrf_protection' => false]);
                 $dataRequest = json_decode($request->getContent(), true);
-                $dataRequest = array_replace($dataOriginal, $dataRequest);
-                $form->submit($dataRequest);
 
-                if ($form->isValid()) {
+                if (is_array($dataRequest)) {
+                    $form = $this->createForm(FormUser::class, $itemToEdit, ['csrf_protection' => false]);
 
-                    $dataToSave = $form->getData();
-                    if (!$dataToSave->getStatus()) $dataToSave->setStatus(false);
+                    $dataRequest = array_replace($dataOriginal, $dataRequest);
+                    $dataRequest['status'] = ( $dataRequest['status'] == 'Enabled');
+                    $dataRequest['created_at'] = (new \DateTime($dataRequest['created_at']))->format('Y-m-d H:i:s');
 
-                    $em = $doc->getManager();
-                    $em->persist($dataToSave);
-                    $em->flush();
 
-                    $rs['success'] = true;
+                    $form->submit($dataRequest);
 
-                } else {
-                    $errors = '';
-                    foreach ($form->getErrors(true) as $error)
-                        $errors .= $error->getMessage() . '. ';
-                    $rs['error'] = $errors;
+                    if ($form->isValid()) {
+
+                        $dataToSave = $form->getData();
+                        if (!$dataToSave->getStatus()) $dataToSave->setStatus(false);
+
+                        $em = $doc->getManager();
+                        $em->persist($dataToSave);
+                        $em->flush();
+
+                        $rs['success'] = true;
+
+                    } else {
+                        $errors = '';
+                        foreach ($form->getErrors(true) as $error)
+                            $errors .= $error->getMessage() . '. ';
+                        $rs['error'] = $errors;
+                    }
                 }
+
 
             } catch (\Exception $ex) {
                 $rs['error'] = $ex->getMessage();
@@ -184,10 +205,30 @@ class ApiController extends Controller
         return new JsonResponse($rs);
     }
 
+    /**
+     * @Route("/init/all", name="init_data")
+     * @Method({"GET", "OPTIONS"})
+     * @ApiDoc(resource=true, description="Get initial data from database")
+     */
+    public function getInitData()
+    {
+        return new JsonResponse([
+            'statuses' => [
+                'Enabled',
+                'Disabled'
+            ]
+        ]);
+
+    }
+
 
     /**
-     * @Route("/get/{id}", name="api_view_user", requirements={"id": "\d+"})
+     * @Route("/users/{id}/details", name="api_view_user", requirements={"id": "\d+"})
      * @Method({"GET"})
+     * @ApiDoc(
+     *  resource=true,
+     *  description="Get details from user registered"
+     * )
      */
     public function getAction($id)
     {
@@ -198,6 +239,11 @@ class ApiController extends Controller
                 ->getRepository('AppBundle:User')
                 ->find($id)
                 ->toArray();
+
+            if (isset($rs['status'])) {
+                $rs['status'] = ($rs['status'] ? 'Enabled' : 'Disabled');
+                $rs['statuses'] = ['Enabled', 'Disabled'];
+            }
 
         } catch (\Exception $ex) {
             $rs['error'] = $ex->getMessage();
@@ -211,10 +257,15 @@ class ApiController extends Controller
 
 
     /**
-     * @Route("/delete/{id}", name="api_delete_user", requirements={"id": "\d+"})
+     * @Route("/users/{id}", name="api_delete_user", requirements={"id": "\d+"})
      * @Method({"DELETE"})
+     * @ApiDoc(
+     *  resource=true,
+     *  description="Delete user from database"
+     * )
+     *
      */
-    public function deleteAction(Request $request, $id)
+    public function deleteAction($id)
     {
         $rs = ['success' => false];
         $doc = $this->getDoctrine();

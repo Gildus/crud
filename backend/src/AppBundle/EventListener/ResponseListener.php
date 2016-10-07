@@ -9,8 +9,8 @@ class ResponseListener
     public function onKernelResponse(FilterResponseEvent $event)
     {
         $header = $event->getResponse()->headers;
-        $header->set('Access-Control-Allow-Headers', 'origin, content-type, accept, pagination');
         $header->set('Access-Control-Allow-Origin', '*');
-        $header->set('Access-Control-Allow-Methods', 'POST, GET, PUT, DELETE, OPTIONS');
+        $header->set('Access-Control-Allow-Headers', 'Access-Control-Allow-Origin, Content-Type, accept, pagination, x-xsrf-token');
+        $header->set('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS');
     }
 }

@@ -1,6 +1,8 @@
 <?php
 
 namespace AppBundle\Repository;
+use AppBundle\Entity\User;
+
 
 /**
  * UserRepository
@@ -10,4 +12,35 @@ namespace AppBundle\Repository;
  */
 class UserRepository extends \Doctrine\ORM\EntityRepository
 {
+
+    public function getListItems($offSet, $numPages)
+    {
+        $resTotal = $this->getEntityManager()
+            ->createQueryBuilder()
+            ->select('count(u.id) total')
+            ->from(User::class, 'u')
+            ->getQuery()
+            ->getSingleResult();
+
+
+        $row = ($offSet - 1);
+        $row = ($row == 0) ? $row : ($row * $numPages);
+        $res =  $this->getEntityManager()
+            ->createQueryBuilder()
+            ->select(['u.id','u.email','u.names','u.status'])
+            ->from(User::class, 'u')
+            ->orderBy('u.id','desc')
+            ->setFirstResult($row)
+            ->setMaxResults($numPages)
+            ->getQuery()
+            ->getScalarResult()
+            ;
+
+        return [
+            'total' => $resTotal['total'],
+            'result' => $res
+        ];
+
+
+    }
 }

@@ -44,7 +44,7 @@ export class UserListComponent implements OnInit {
     users: IUser[];
     apiHost: string;
 
-    public itemsPerPage: number = 2;
+    public itemsPerPage: number = 3;
     public totalItems: number = 0;
     public currentPage: number = 1;
 
